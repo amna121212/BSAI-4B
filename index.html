@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Stock Price App</title>
+
+  <style>
+    :root{
+      --bg1:#0f172a;
+      --bg2:#111827;
+      --card:#0b1220cc;
+      --border:#334155;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#22c55e;
+      --danger:#ef4444;
+      --shadow: 0 12px 40px rgba(0,0,0,.35);
+      --radius: 16px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1000px 600px at 15% 10%, #1d4ed8 0%, transparent 55%),
+        radial-gradient(900px 500px at 85% 20%, #22c55e 0%, transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      padding: 36px 16px;
+    }
+
+    .wrap{
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .header{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:18px;
+    }
+
+    .title{
+      margin:0;
+      font-size: 34px;
+      letter-spacing: .2px;
+      line-height:1.1;
+    }
+
+    .subtitle{
+      margin:6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .pill{
+      padding:8px 12px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background: rgba(15, 23, 42, 0.45);
+      color: var(--muted);
+      font-size: 12px;
+      white-space:nowrap;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 860px){
+      .grid{
+        grid-template-columns: 420px 1fr;
+        align-items:start;
+      }
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+    }
+
+    .card-head{
+      padding: 16px 18px;
+      border-bottom:1px solid rgba(51,65,85,.55);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .card-head h2{
+      margin:0;
+      font-size: 16px;
+      color: var(--text);
+      letter-spacing:.3px;
+    }
+
+    .card-body{
+      padding: 18px;
+    }
+
+    label{
+      display:block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom:10px;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+    }
+
+    input{
+      flex:1;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(51,65,85,.75);
+      background: rgba(2,6,23,.55);
+      color: var(--text);
+      outline:none;
+    }
+    input::placeholder{ color: rgba(148,163,184,.75); }
+    input:focus{
+      border-color: rgba(34,197,94,.9);
+      box-shadow: 0 0 0 4px rgba(34,197,94,.15);
+    }
+
+    button{
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(34,197,94,.55);
+      background: linear-gradient(180deg, rgba(34,197,94,.95), rgba(22,163,74,.95));
+      color: #052e16;
+      font-weight: 700;
+      cursor:pointer;
+      transition: transform .06s ease, filter .15s ease;
+      min-width: 120px;
+    }
+
+    button:hover{ filter: brightness(1.05); }
+    button:active{ transform: translateY(1px); }
+
+    .hint{
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .alert{
+      margin-top: 14px;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(239,68,68,.45);
+      background: rgba(239,68,68,.10);
+      color: #fecaca;
+      font-size: 13px;
+    }
+
+    .result-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .symbol{
+      display:flex;
+      align-items:baseline;
+      gap:10px;
+    }
+
+    .symbol h3{
+      margin:0;
+      font-size: 20px;
+      letter-spacing:.4px;
+    }
+
+    .badge{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.35);
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(2,6,23,.35);
+    }
+
+    .price{
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing:.2px;
+    }
+
+    .table{
+      width:100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      overflow:hidden;
+      border-radius: 14px;
+      border:1px solid rgba(51,65,85,.55);
+    }
+
+    .table tr{
+      background: rgba(2,6,23,.35);
+    }
+    .table tr:nth-child(even){
+      background: rgba(2,6,23,.22);
+    }
+    .table td{
+      padding: 12px 12px;
+      border-bottom: 1px solid rgba(51,65,85,.35);
+      font-size: 13px;
+    }
+    .table td:first-child{
+      color: var(--muted);
+      width: 44%;
+    }
+
+    .muted{
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    .footer{
+      margin-top: 16px;
+      text-align:center;
+      color: rgba(148,163,184,.85);
+      font-size: 12px;
+    }
+
+    .kpi{
+      display:flex;
+      gap:10px;
+      margin-top: 10px;
+      flex-wrap:wrap;
+    }
+    .kpi .chip{
+      padding:8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(51,65,85,.55);
+      background: rgba(2,6,23,.25);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .up{ color:#86efac; }
+    .down{ color:#fca5a5; }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <h1 class="title">Stock Price App</h1>
+        <p class="subtitle">Flask + Alpha Vantage (GLOBAL_QUOTE) — enter a symbol and fetch live quote data.</p>
+      </div>
+      <div class="pill">localhost:5000</div>
+    </div>
+
+    <div class="grid">
+      <!-- LEFT: Search -->
+      <div class="card">
+        <div class="card-head">
+          <h2>Search</h2>
+          <span class="badge">Example: AAPL, TSLA, MSFT</span>
+        </div>
+        <div class="card-body">
+          <form method="POST">
+            <label>Enter stock symbol</label>
+            <div class="row">
+              <input
+                type="text"
+                name="symbol"
+                value="{{ symbol }}"
+                placeholder="e.g., TSLA"
+                required
+                autocomplete="off"
+              />
+              <button type="submit">Get Price</button>
+            </div>
+            <div class="hint">Tip: Free API has rate limits — if “rate limit hit”, wait 1 minute and retry.</div>
+          </form>
+
+          {% if error %}
+            <div class="alert">{{ error }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- RIGHT: Results -->
+      <div class="card">
+        <div class="card-head">
+          <h2>Result</h2>
+          <span class="badge">GLOBAL_QUOTE</span>
+        </div>
+
+        <div class="card-body">
+          {% if stock_data %}
+            <div class="result-top">
+              <div class="symbol">
+                <h3>{{ stock_data.symbol }}</h3>
+                <span class="badge">Trading Day: {{ stock_data.latest_trading_day }}</span>
+              </div>
+
+              <div class="price">${{ stock_data.price }}</div>
+            </div>
+
+            <div class="kpi">
+              <div class="chip">Change: <span class="{% if stock_data.change.startswith('-') %}down{% else %}up{% endif %}">{{ stock_data.change }}</span></div>
+              <div class="chip">Change %: <span class="{% if stock_data.change_percent.startswith('-') %}down{% else %}up{% endif %}">{{ stock_data.change_percent }}</span></div>
+              <div class="chip">Volume: {{ stock_data.volume }}</div>
+            </div>
+
+            <table class="table">
+              <tr><td>Open</td><td>{{ stock_data.open }}</td></tr>
+              <tr><td>High</td><td>{{ stock_data.high }}</td></tr>
+              <tr><td>Low</td><td>{{ stock_data.low }}</td></tr>
+              <tr><td>Previous Close</td><td>{{ stock_data.previous_close }}</td></tr>
+              <tr><td>Latest Trading Day</td><td>{{ stock_data.latest_trading_day }}</td></tr>
+              <tr><td>Volume</td><td>{{ stock_data.volume }}</td></tr>
+            </table>
+
+            <div class="muted">Note: Values are provided by Alpha Vantage and may update with market timings.</div>
+          {% else %}
+            <div class="muted">
+              No stock data yet. Enter a symbol on the left and click <b>Get Price</b>.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">Made with Flask • Requests • Jinja2</div>
+  </div>
+</body>
+</html>
