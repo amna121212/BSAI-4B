@@ -1,49 +1,34 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Animal Herd Detection</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <div class="card">
-    <h1>Animal Herd Detection (YOLO + Flask) 🐄🐑</h1>
+    <div class="chat-container">
+        <h1>Restaurant Information Bot</h1>
 
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="flash">{{ messages[0] }}</div>
-      {% endif %}
-    {% endwith %}
-
-    <form action="/detect" method="POST" enctype="multipart/form-data">
-      <label class="lbl">Upload Image/Video:</label>
-      <input type="file" name="file" required />
-
-      <hr/>
-
-      <h3>Location for Map Alert (Bonus) 🗺️</h3>
-      <p class="muted">
-        Option 1: Click "Use My Location" (browser GPS).<br/>
-        Option 2: Enter latitude/longitude manually.<br/>
-        Option 3: If image has EXIF GPS, it auto-detects.
-      </p>
-
-      <div class="row">
-        <div>
-          <label class="lbl">Latitude</label>
-          <input id="lat" name="lat" placeholder="e.g. 33.6844" />
+        <div id="chat-box" class="chat-box">
+            <div class="bot-message">
+                Hello! I can help with menu, reservations, recommendations, and order tracking.
+            </div>
         </div>
-        <div>
-          <label class="lbl">Longitude</label>
-          <input id="lon" name="lon" placeholder="e.g. 73.0479" />
+
+        <div class="quick-buttons">
+            <button onclick="sendQuickMessage('show menu')">Menu</button>
+            <button onclick="sendQuickMessage('recommend something')">Recommend</button>
+            <button onclick="sendQuickMessage('reservation amna')">Reservation</button>
+            <button onclick="sendQuickMessage('track order 102')">Track Order</button>
         </div>
-      </div>
 
-      <button type="button" class="btn secondary" onclick="getLocation()">Use My Location</button>
-      <button class="btn" type="submit">Detect Herd</button>
-    </form>
-  </div>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Type your message here...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
 
-  <script src="{{ url_for('static', filename='main.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
