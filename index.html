@@ -1,34 +1,574 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurant Bot</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>La Bella — Restaurant Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:    #faf6f0;
+      --paper:    #f3ede3;
+      --gold:     #c9993f;
+      --gold-lt:  #e8c87a;
+      --espresso: #2c1a0e;
+      --brown:    #5c3d2e;
+      --sage:     #7a8c6e;
+      --red:      #b03a2e;
+      --white:    #ffffff;
+      --shadow:   0 8px 40px rgba(44,26,14,.12);
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--espresso);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      width: 100%;
+      background: var(--espresso);
+      padding: 18px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 20px rgba(0,0,0,.3);
+    }
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem;
+      color: var(--gold);
+      letter-spacing: .04em;
+    }
+    .logo span { font-style: italic; color: var(--gold-lt); }
+    .tagline {
+      font-size: .78rem;
+      color: rgba(255,255,255,.55);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      width: 100%;
+      max-width: 860px;
+      padding: 40px 24px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* ── HERO CARD ── */
+    .hero {
+      background: var(--espresso);
+      border-radius: 20px;
+      padding: 38px 40px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, rgba(201,153,63,.25) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      color: var(--white);
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+    .hero-title em { color: var(--gold); font-style: italic; }
+    .hero-sub {
+      color: rgba(255,255,255,.6);
+      font-size: .92rem;
+      line-height: 1.6;
+      max-width: 500px;
+    }
+
+    /* ── QUICK TOPICS ── */
+    .quick-label {
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--brown);
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      background: var(--paper);
+      border: 1px solid rgba(201,153,63,.4);
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-size: .82rem;
+      color: var(--brown);
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+    .chip:hover {
+      background: var(--gold);
+      color: var(--white);
+      border-color: var(--gold);
+      transform: translateY(-1px);
+    }
+
+    /* ── CHAT BOX ── */
+    .chat-card {
+      background: var(--white);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-header {
+      background: var(--paper);
+      padding: 16px 24px;
+      border-bottom: 1px solid rgba(201,153,63,.2);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .avatar {
+      width: 38px; height: 38px;
+      background: var(--espresso);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+    .chat-header-info strong {
+      font-size: .92rem;
+      color: var(--espresso);
+      display: block;
+    }
+    .online-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: .73rem;
+      color: var(--sage);
+    }
+    .online-dot::before {
+      content: '';
+      width: 7px; height: 7px;
+      background: #6abf6e;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* chat messages */
+    .chat-messages {
+      padding: 24px;
+      min-height: 280px;
+      max-height: 420px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .chat-messages::-webkit-scrollbar { width: 5px; }
+    .chat-messages::-webkit-scrollbar-thumb { background: var(--paper); border-radius: 10px; }
+
+    .bubble-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      animation: popIn .25s ease;
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .bubble-row.user { flex-direction: row-reverse; }
+
+    .bubble-avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem;
+    }
+    .bubble-avatar.bot { background: var(--espresso); }
+    .bubble-avatar.user-av { background: var(--gold); }
+
+    .bubble {
+      max-width: 75%;
+      padding: 13px 18px;
+      border-radius: 18px;
+      font-size: .9rem;
+      line-height: 1.6;
+    }
+    .bubble.bot {
+      background: var(--paper);
+      color: var(--espresso);
+      border-bottom-left-radius: 4px;
+    }
+    .bubble.user {
+      background: var(--espresso);
+      color: var(--white);
+      border-bottom-right-radius: 4px;
+    }
+    .bubble .match-label {
+      font-size: .7rem;
+      color: var(--brown);
+      display: block;
+      margin-bottom: 4px;
+      font-style: italic;
+    }
+    .score-badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: .7rem;
+      font-weight: 500;
+    }
+    .score-high   { background: #e8f5e9; color: #2e7d32; }
+    .score-medium { background: #fff8e1; color: #f57f17; }
+    .score-low    { background: #fce4ec; color: #880e4f; }
+
+    /* typing indicator */
+    .typing-indicator { display: none; }
+    .typing-indicator.show { display: flex; }
+    .typing-bubble {
+      background: var(--paper);
+      border-radius: 18px 18px 18px 4px;
+      padding: 14px 20px;
+      display: flex; gap: 5px; align-items: center;
+    }
+    .dot {
+      width: 7px; height: 7px;
+      background: var(--brown);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite;
+      opacity: .6;
+    }
+    .dot:nth-child(2) { animation-delay: .2s; }
+    .dot:nth-child(3) { animation-delay: .4s; }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-6px); }
+    }
+
+    /* ── INPUT ── */
+    .chat-input-area {
+      padding: 16px 20px;
+      border-top: 1px solid var(--paper);
+      display: flex;
+      gap: 10px;
+      background: var(--white);
+    }
+    #questionInput {
+      flex: 1;
+      border: 1.5px solid rgba(201,153,63,.35);
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      color: var(--espresso);
+      background: var(--paper);
+      outline: none;
+      transition: border-color .2s;
+      resize: none;
+    }
+    #questionInput:focus { border-color: var(--gold); background: var(--white); }
+    #questionInput::placeholder { color: rgba(92,61,46,.45); }
+
+    #sendBtn {
+      background: var(--espresso);
+      color: var(--white);
+      border: none;
+      border-radius: 12px;
+      padding: 0 24px;
+      font-size: .9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .2s, transform .15s;
+      white-space: nowrap;
+    }
+    #sendBtn:hover  { background: var(--brown); transform: scale(1.03); }
+    #sendBtn:active { transform: scale(.97); }
+    #sendBtn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    /* ── SUGGESTIONS ── */
+    .suggestions-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: var(--shadow);
+    }
+    .suggestions-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--espresso);
+      margin-bottom: 12px;
+    }
+    .suggestion-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background .18s;
+      border: 1px solid transparent;
+    }
+    .suggestion-item:hover {
+      background: var(--paper);
+      border-color: rgba(201,153,63,.25);
+    }
+    .suggestion-q { font-size: .87rem; color: var(--brown); }
+    .suggestion-score {
+      font-size: .75rem;
+      color: var(--sage);
+      font-weight: 500;
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+    .suggestions-hidden { display: none; }
+
+    /* ── FOOTER ── */
+    footer {
+      margin-top: auto;
+      padding: 20px;
+      text-align: center;
+      font-size: .75rem;
+      color: rgba(44,26,14,.4);
+    }
+  </style>
 </head>
 <body>
-    <div class="chat-container">
-        <h1>Restaurant Information Bot</h1>
 
-        <div id="chat-box" class="chat-box">
-            <div class="bot-message">
-                Hello! I can help with menu, reservations, recommendations, and order tracking.
-            </div>
-        </div>
+<header>
+  <div class="logo">La <span>Bella</span></div>
+  <div class="tagline">Restaurant Assistant</div>
+</header>
 
-        <div class="quick-buttons">
-            <button onclick="sendQuickMessage('show menu')">Menu</button>
-            <button onclick="sendQuickMessage('recommend something')">Recommend</button>
-            <button onclick="sendQuickMessage('reservation amna')">Reservation</button>
-            <button onclick="sendQuickMessage('track order 102')">Track Order</button>
-        </div>
+<main>
+  <!-- Hero -->
+  <div class="hero">
+    <h1 class="hero-title">Hello! I'm <em>Bella</em>, your restaurant guide 🍽️</h1>
+    <p class="hero-sub">Ask me anything — reservations, menu options, hours, dietary needs, events, and more. I'm here to help!</p>
+  </div>
 
-        <div class="input-area">
-            <input type="text" id="user-input" placeholder="Type your message here...">
-            <button onclick="sendMessage()">Send</button>
-        </div>
+  <!-- Quick chips -->
+  <div>
+    <p class="quick-label">Popular questions</p>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <!-- Chat window -->
+  <div class="chat-card">
+    <div class="chat-header">
+      <div class="avatar">🤵</div>
+      <div class="chat-header-info">
+        <strong>Bella — Restaurant Bot</strong>
+        <span class="online-dot">Available now</span>
+      </div>
     </div>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <div class="chat-messages" id="chatMessages">
+      <!-- Welcome message -->
+      <div class="bubble-row">
+        <div class="bubble-avatar bot">🤵</div>
+        <div class="bubble bot">
+          Welcome to <strong>La Bella</strong>! I can answer questions about our menu, reservations, hours, dietary options, and more. What would you like to know?
+        </div>
+      </div>
+    </div>
+
+    <!-- Typing indicator -->
+    <div class="typing-indicator bubble-row" id="typingIndicator">
+      <div class="bubble-avatar bot">🤵</div>
+      <div class="typing-bubble">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <textarea id="questionInput" rows="1" placeholder="e.g. Do you have vegetarian dishes?"></textarea>
+      <button id="sendBtn" onclick="askQuestion()">Ask ✦</button>
+    </div>
+  </div>
+
+  <!-- Related suggestions panel -->
+  <div class="suggestions-card suggestions-hidden" id="suggestionsPanel">
+    <h3>Related questions you might also ask:</h3>
+    <div id="suggestionsList"></div>
+  </div>
+</main>
+
+<footer>Powered by MiniLM · FAISS · Flask · Built for La Bella Restaurant</footer>
+
+<script>
+const QUICK_CHIPS = [
+  "What are your opening hours?",
+  "Do you take reservations?",
+  "Do you have vegan options?",
+  "Is there parking?",
+  "Do you deliver?",
+  "Happy hour times?",
+  "Do you allow pets?",
+  "What is the dress code?"
+];
+
+// Render chips
+const chipsEl = document.getElementById("chips");
+QUICK_CHIPS.forEach(q => {
+  const chip = document.createElement("button");
+  chip.className = "chip";
+  chip.textContent = q;
+  chip.onclick = () => { fillAndSend(q); };
+  chipsEl.appendChild(chip);
+});
+
+function fillAndSend(text) {
+  document.getElementById("questionInput").value = text;
+  askQuestion();
+}
+
+// Auto-resize textarea
+const input = document.getElementById("questionInput");
+input.addEventListener("input", () => {
+  input.style.height = "auto";
+  input.style.height = Math.min(input.scrollHeight, 120) + "px";
+});
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); askQuestion(); }
+});
+
+// ── CORE FUNCTION ──
+async function askQuestion() {
+  const q = input.value.trim();
+  if (!q) return;
+
+  appendMessage(q, "user");
+  input.value = "";
+  input.style.height = "auto";
+
+  const sendBtn = document.getElementById("sendBtn");
+  sendBtn.disabled = true;
+  showTyping(true);
+
+  try {
+    const res = await fetch("/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: q })
+    });
+    const data = await res.json();
+    showTyping(false);
+
+    if (data.error) {
+      appendBotMessage("⚠️ " + data.error, null, null);
+    } else {
+      appendBotMessage(data.answer, data.matched_question, data.score);
+      if (data.suggestions && data.suggestions.length > 0) {
+        showSuggestions(data.suggestions);
+      } else {
+        hideSuggestions();
+      }
+    }
+  } catch (err) {
+    showTyping(false);
+    appendBotMessage("⚠️ Connection error. Please make sure the Flask server is running.", null, null);
+  }
+
+  sendBtn.disabled = false;
+  scrollToBottom();
+}
+
+function appendMessage(text, role) {
+  const row = document.createElement("div");
+  row.className = `bubble-row ${role}`;
+  const avEl = document.createElement("div");
+  avEl.className = `bubble-avatar ${role === "user" ? "user-av" : "bot"}`;
+  avEl.textContent = role === "user" ? "🙋" : "🤵";
+  const bub = document.createElement("div");
+  bub.className = `bubble ${role}`;
+  bub.textContent = text;
+  row.appendChild(avEl);
+  row.appendChild(bub);
+  document.getElementById("chatMessages").appendChild(row);
+  scrollToBottom();
+}
+
+function appendBotMessage(answer, matched, score) {
+  const row = document.createElement("div");
+  row.className = "bubble-row";
+  const avEl = document.createElement("div");
+  avEl.className = "bubble-avatar bot";
+  avEl.textContent = "🤵";
+  const bub = document.createElement("div");
+  bub.className = "bubble bot";
+
+  let html = "";
+  if (matched) {
+    html += `<span class="match-label">Matched: "${matched}"</span>`;
+  }
+  html += `<span>${escapeHtml(answer)}</span>`;
+   
+  bub.innerHTML = html;
+  row.appendChild(avEl);
+  row.appendChild(bub);
+  document.getElementById("chatMessages").appendChild(row);
+  scrollToBottom();
+}
+
+function showSuggestions(suggestions) {
+  const panel = document.getElementById("suggestionsPanel");
+  const list  = document.getElementById("suggestionsList");
+  list.innerHTML = "";
+  suggestions.forEach(s => {
+    const item = document.createElement("div");
+    item.className = "suggestion-item";
+    item.innerHTML = `<span class="suggestion-q">💬 ${escapeHtml(s.question)}</span>
+                      <span class="suggestion-score">${s.score}%</span>`;
+    item.onclick = () => fillAndSend(s.question);
+    list.appendChild(item);
+  });
+  panel.classList.remove("suggestions-hidden");
+}
+
+function hideSuggestions() {
+  document.getElementById("suggestionsPanel").classList.add("suggestions-hidden");
+}
+
+function showTyping(show) {
+  const el = document.getElementById("typingIndicator");
+  el.classList.toggle("show", show);
+  scrollToBottom();
+}
+
+function scrollToBottom() {
+  const c = document.getElementById("chatMessages");
+  c.scrollTop = c.scrollHeight;
+}
+
+function escapeHtml(text) {
+  const d = document.createElement("div");
+  d.textContent = text;
+  return d.innerHTML;
+}
+</script>
 </body>
 </html>
