@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CareerAI — Discover Your Path</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #050a14;
+      --surface: #0c1525;
+      --card: #111d30;
+      --border: rgba(99,179,237,0.12);
+      --accent: #3b82f6;
+      --accent2: #06b6d4;
+      --gold: #f59e0b;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --glow: rgba(59,130,246,0.3);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Animated background */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: 0;
+    }
+
+    .bg-orbs {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      animation: drift 15s ease-in-out infinite;
+    }
+
+    .orb1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, transparent 70%);
+      top: -100px; left: -100px;
+      animation-delay: 0s;
+    }
+
+    .orb2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(6,182,212,0.15) 0%, transparent 70%);
+      bottom: -50px; right: -50px;
+      animation-delay: -5s;
+    }
+
+    .orb3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(245,158,11,0.1) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      animation-delay: -10s;
+    }
+
+    @keyframes drift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -30px) scale(1.05); }
+      66% { transform: translate(-20px, 20px) scale(0.95); }
+    }
+
+    /* NAV */
+    nav {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 60px;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      background: rgba(5,10,20,0.6);
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 15px var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 10px var(--accent); transform: scale(1); }
+      50% { box-shadow: 0 0 25px var(--accent); transform: scale(1.2); }
+    }
+
+    .nav-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 25px rgba(59,130,246,0.4);
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      z-index: 5;
+      min-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 40px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 100px;
+      padding: 8px 20px;
+      font-size: 0.8rem;
+      color: var(--accent2);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 500;
+      margin-bottom: 32px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .badge-dot {
+      width: 6px; height: 6px;
+      background: var(--accent2);
+      border-radius: 50%;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(3rem, 7vw, 6rem);
+      font-weight: 800;
+      line-height: 1.05;
+      margin-bottom: 28px;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #3b82f6, #06b6d4, #f59e0b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--muted);
+      max-width: 580px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+      font-weight: 300;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      padding: 16px 36px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 500;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'DM Sans', sans-serif;
+      box-shadow: 0 0 40px rgba(59,130,246,0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 50px rgba(59,130,246,0.5);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      padding: 16px 36px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 500;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      background: rgba(59,130,246,0.08);
+    }
+
+    /* STATS */
+    .stats-row {
+      display: flex;
+      gap: 60px;
+      justify-content: center;
+      margin-top: 80px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.6s 0.4s ease both;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .stat-num span {
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* FEATURES */
+    .features {
+      position: relative;
+      z-index: 5;
+      padding: 80px 60px;
+    }
+
+    .section-label {
+      text-align: center;
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(59,130,246,0.3);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(59,130,246,0.1);
+    }
+
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .feature-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .feature-card p {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.7;
+    }
+
+    /* HOW IT WORKS */
+    .how {
+      position: relative;
+      z-index: 5;
+      padding: 80px 60px;
+      background: rgba(12,21,37,0.5);
+    }
+
+    .steps {
+      display: flex;
+      gap: 0;
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 32px;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2), var(--gold));
+      opacity: 0.4;
+    }
+
+    .step {
+      flex: 1;
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    .step-num {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: var(--card);
+      border: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--accent);
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 0 25px rgba(59,130,246,0.3);
+    }
+
+    .step h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    .step p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* CTA */
+    .cta-section {
+      position: relative;
+      z-index: 5;
+      padding: 100px 60px;
+      text-align: center;
+    }
+
+    .cta-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 70px;
+      max-width: 700px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.15) 0%, transparent 60%);
+    }
+
+    .cta-box h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .cta-box p {
+      color: var(--muted);
+      margin-bottom: 40px;
+      font-size: 1.05rem;
+      position: relative;
+    }
+
+    /* FOOTER */
+    footer {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+      padding: 32px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 20px 24px; }
+      .hero { padding: 60px 24px; }
+      .features { padding: 60px 24px; }
+      .how { padding: 60px 24px; }
+      .steps { flex-direction: column; gap: 40px; }
+      .steps::before { display: none; }
+      .cta-section { padding: 60px 24px; }
+      .cta-box { padding: 40px 24px; }
+      .stats-row { gap: 32px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
+<nav>
+  <a class="logo" href="/">
+    <div class="logo-dot"></div>
+    CareerAI
+  </a>
+  <a href="/quiz" class="nav-btn">Start Free →</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">
+    <div class="badge-dot"></div>
+    Powered by Generative AI
+  </div>
+  <h1>
+    Discover Your<br/>
+    <span class="gradient-text">Perfect Career Path</span>
+  </h1>
+  <p>
+    Answer a few smart questions about your skills and interests. 
+    Our AI analyzes your profile and delivers personalized career recommendations with a custom learning roadmap.
+  </p>
+  <div class="hero-actions">
+    <a href="/quiz" class="btn-primary">
+      ✦ Take the Quiz
+    </a>
+    <a href="#how" class="btn-secondary">How it works</a>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-num">10<span>+</span></div>
+      <div class="stat-label">Career Paths</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">4</div>
+      <div class="stat-label">Phase Roadmap</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">AI<span>✦</span></div>
+      <div class="stat-label">Powered Analysis</div>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="section-label">What You Get</div>
+  <h2 class="section-title">Everything You Need to<br/>Plan Your Future</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <span class="feature-icon">🎯</span>
+      <h3>Smart Career Matching</h3>
+      <p>AI analyzes your unique skill set and interests to recommend the top 3 career paths with compatibility scores.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🔍</span>
+      <h3>Skill Gap Detection</h3>
+      <p>Know exactly what skills you're missing for your dream career. No guessing, just clear actionable insights.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🗺️</span>
+      <h3>4-Phase Learning Roadmap</h3>
+      <p>A structured, personalized roadmap from where you are to where you want to be — with curated resources.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">⚡</span>
+      <h3>Instant AI Analysis</h3>
+      <p>Powered by state-of-the-art Generative AI. Get detailed, intelligent results in seconds — not days.</p>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="how">
+  <div class="section-label">The Process</div>
+  <h2 class="section-title">How It Works</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h4>Fill the Quiz</h4>
+      <p>Tell us your skills, interests, education, and work style preferences</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h4>AI Analyzes</h4>
+      <p>Our GenAI engine matches your profile against career requirements</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h4>Get Results</h4>
+      <p>Receive career recommendations, skill gaps, and your personalized roadmap</p>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-box">
+    <h2>Ready to Find<br/><span class="gradient-text">Your Path?</span></h2>
+    <p>Takes less than 3 minutes. No signup required.</p>
+    <a href="/quiz" class="btn-primary" style="font-size:1.1rem; padding:18px 44px;">
+      ✦ Start Now — It's Free
+    </a>
+  </div>
+</section>
+
+<footer>
+  © 2024 CareerAI — AI Career Path Predictor &nbsp;|&nbsp; Built with Flask + Generative AI
+</footer>
+
+</body>
+</html>

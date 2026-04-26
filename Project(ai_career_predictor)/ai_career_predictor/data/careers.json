@@ -1,0 +1,84 @@
+{
+  "careers": [
+    {
+      "title": "Data Scientist",
+      "icon": "📊",
+      "industry": "Technology",
+      "required_skills": ["Python", "Machine Learning", "Statistics", "SQL", "Data Visualization", "Deep Learning"],
+      "avg_salary": "$95,000 - $140,000",
+      "demand": "Very High"
+    },
+    {
+      "title": "Software Engineer",
+      "icon": "💻",
+      "industry": "Technology",
+      "required_skills": ["Programming", "Data Structures", "Algorithms", "System Design", "Git", "APIs"],
+      "avg_salary": "$85,000 - $130,000",
+      "demand": "Very High"
+    },
+    {
+      "title": "UI/UX Designer",
+      "icon": "🎨",
+      "industry": "Design",
+      "required_skills": ["Figma", "User Research", "Prototyping", "Visual Design", "Wireframing", "CSS"],
+      "avg_salary": "$70,000 - $110,000",
+      "demand": "High"
+    },
+    {
+      "title": "Cybersecurity Analyst",
+      "icon": "🛡️",
+      "industry": "Security",
+      "required_skills": ["Network Security", "Ethical Hacking", "Linux", "Python", "Risk Assessment", "Cryptography"],
+      "avg_salary": "$80,000 - $125,000",
+      "demand": "Very High"
+    },
+    {
+      "title": "Product Manager",
+      "icon": "🚀",
+      "industry": "Business",
+      "required_skills": ["Strategic Thinking", "Communication", "Data Analysis", "Agile", "Market Research", "Leadership"],
+      "avg_salary": "$90,000 - $145,000",
+      "demand": "High"
+    },
+    {
+      "title": "AI/ML Engineer",
+      "icon": "🤖",
+      "industry": "Technology",
+      "required_skills": ["Python", "TensorFlow", "PyTorch", "Mathematics", "MLOps", "Cloud Platforms"],
+      "avg_salary": "$110,000 - $160,000",
+      "demand": "Very High"
+    },
+    {
+      "title": "Cloud Architect",
+      "icon": "☁️",
+      "industry": "Technology",
+      "required_skills": ["AWS/Azure/GCP", "DevOps", "Linux", "Networking", "Security", "Docker"],
+      "avg_salary": "$120,000 - $175,000",
+      "demand": "High"
+    },
+    {
+      "title": "Digital Marketing Specialist",
+      "icon": "📱",
+      "industry": "Marketing",
+      "required_skills": ["SEO/SEM", "Social Media", "Content Creation", "Analytics", "Email Marketing", "Copywriting"],
+      "avg_salary": "$55,000 - $90,000",
+      "demand": "High"
+    },
+    {
+      "title": "Business Analyst",
+      "icon": "📈",
+      "industry": "Business",
+      "required_skills": ["Data Analysis", "SQL", "Excel", "Communication", "Problem Solving", "Process Modeling"],
+      "avg_salary": "$65,000 - $100,000",
+      "demand": "High"
+    },
+    {
+      "title": "Blockchain Developer",
+      "icon": "⛓️",
+      "industry": "Technology",
+      "required_skills": ["Solidity", "Smart Contracts", "Web3", "Cryptography", "JavaScript", "Python"],
+      "avg_salary": "$100,000 - $150,000",
+      "demand": "Medium"
+    }
+  ]
+}

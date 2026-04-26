@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CareerAI — Your Profile Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #050a14;
+      --surface: #0c1525;
+      --card: #111d30;
+      --border: rgba(99,179,237,0.12);
+      --accent: #3b82f6;
+      --accent2: #06b6d4;
+      --gold: #f59e0b;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --success: #10b981;
+      --error: #ef4444;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .bg-grid {
+      position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: 0;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      z-index: 0;
+    }
+
+    .orb1 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%); top: -100px; right: 0; }
+    .orb2 { width: 350px; height: 350px; background: radial-gradient(circle, rgba(6,182,212,0.12) 0%, transparent 70%); bottom: 0; left: 0; }
+
+    nav {
+      position: relative; z-index: 10;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 60px;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      background: rgba(5,10,20,0.7);
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem;
+      color: var(--text); text-decoration: none;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .logo-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--accent); box-shadow: 0 0 15px var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 10px var(--accent); }
+      50% { box-shadow: 0 0 25px var(--accent); }
+    }
+
+    /* PROGRESS */
+    .quiz-wrapper {
+      position: relative; z-index: 5;
+      max-width: 760px; margin: 0 auto;
+      padding: 48px 24px;
+    }
+
+    .progress-header {
+      margin-bottom: 40px;
+    }
+
+    .progress-text {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .progress-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase;
+    }
+
+    .progress-count {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem; color: var(--accent); font-weight: 700;
+    }
+
+    .progress-bar {
+      height: 4px; background: var(--card); border-radius: 100px; overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 100px;
+      transition: width 0.5s ease;
+      box-shadow: 0 0 12px var(--accent);
+    }
+
+    /* STEP */
+    .step {
+      display: none;
+      animation: stepIn 0.4s ease both;
+    }
+
+    .step.active { display: block; }
+
+    @keyframes stepIn {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .step-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25);
+      border-radius: 100px; padding: 5px 14px;
+      font-size: 0.75rem; color: var(--accent2); letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .step h2 {
+      font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 700;
+      margin-bottom: 8px; line-height: 1.2;
+    }
+
+    .step-sub {
+      color: var(--muted); font-size: 0.95rem; margin-bottom: 36px;
+    }
+
+    /* INPUT STYLES */
+    .field {
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block; font-size: 0.88rem; font-weight: 500;
+      color: var(--muted); margin-bottom: 8px; letter-spacing: 0.03em;
+    }
+
+    input[type="text"], select, textarea {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text);
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    input[type="text"]:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    }
+
+    select option { background: var(--card); }
+    textarea { resize: vertical; min-height: 100px; }
+
+    /* TAG PILLS */
+    .tags-container {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      margin-top: 8px;
+    }
+
+    .tag {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 8px 18px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+      color: var(--muted);
+    }
+
+    .tag:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .tag.selected {
+      background: rgba(59,130,246,0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 12px rgba(59,130,246,0.2);
+    }
+
+    /* RADIO CARDS */
+    .radio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .radio-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .radio-card:hover {
+      border-color: rgba(59,130,246,0.4);
+      transform: translateY(-2px);
+    }
+
+    .radio-card.selected {
+      background: rgba(59,130,246,0.12);
+      border-color: var(--accent);
+      box-shadow: 0 0 20px rgba(59,130,246,0.2);
+    }
+
+    .radio-card input { display: none; }
+
+    .radio-icon { font-size: 1.8rem; margin-bottom: 8px; display: block; }
+    .radio-label { font-size: 0.85rem; font-weight: 500; color: var(--muted); }
+    .radio-card.selected .radio-label { color: var(--accent); }
+
+    /* NAV BUTTONS */
+    .step-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 48px;
+    }
+
+    .btn-prev {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-prev:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .btn-next {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      border: none;
+      padding: 14px 36px;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .btn-next:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(59,130,246,0.4);
+    }
+
+    /* LOADING */
+    .loading-screen {
+      display: none;
+      position: fixed; inset: 0;
+      background: var(--bg);
+      z-index: 100;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+    }
+
+    .loading-screen.visible { display: flex; }
+
+    .loader-ring {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      border: 3px solid var(--card);
+      border-top: 3px solid var(--accent);
+      border-right: 3px solid var(--accent2);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem; font-weight: 700;
+      text-align: center;
+    }
+
+    .loading-sub {
+      color: var(--muted); font-size: 0.9rem;
+      animation: blink 1.5s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%,100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    .loading-dots {
+      display: flex; gap: 8px;
+    }
+
+    .loading-dots span {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: dotBounce 1.2s ease-in-out infinite;
+    }
+
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dotBounce {
+      0%,100% { transform: translateY(0); opacity: 0.4; }
+      50% { transform: translateY(-10px); opacity: 1; }
+    }
+
+    @media (max-width: 600px) {
+      nav { padding: 16px 20px; }
+      .step h2 { font-size: 1.5rem; }
+      .radio-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<nav>
+  <a class="logo" href="/">
+    <div class="logo-dot"></div>
+    CareerAI
+  </a>
+</nav>
+
+<div class="quiz-wrapper">
+  <div class="progress-header">
+    <div class="progress-text">
+      <span class="progress-label">Your Profile</span>
+      <span class="progress-count" id="progress-count">Step 1 of 5</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:20%"></div>
+    </div>
+  </div>
+
+  <!-- STEP 1: Basic Info -->
+  <div class="step active" id="step-1">
+    <div class="step-badge">✦ Step 1</div>
+    <h2>Let's start with<br/>the basics</h2>
+    <p class="step-sub">Tell us a little about yourself</p>
+
+    <div class="field">
+      <label>Your Name</label>
+      <input type="text" id="name" placeholder="e.g. Sara Ahmed" />
+    </div>
+
+    <div class="field">
+      <label>Education Level</label>
+      <select id="education">
+        <option value="">Select your education...</option>
+        <option>High School</option>
+        <option>Bachelor's Degree</option>
+        <option>Master's Degree</option>
+        <option>PhD</option>
+        <option>Self-Taught / Bootcamp</option>
+        <option>Currently Studying</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Experience Level</label>
+      <div class="radio-grid">
+        <label class="radio-card" onclick="selectRadio(this, 'experience', 'Beginner (0-1 year)')">
+          <input type="radio" name="experience" value="Beginner (0-1 year)"/>
+          <span class="radio-icon">🌱</span>
+          <span class="radio-label">Beginner</span>
+        </label>
+        <label class="radio-card" onclick="selectRadio(this, 'experience', 'Intermediate (1-3 years)')">
+          <input type="radio" name="experience" value="Intermediate (1-3 years)"/>
+          <span class="radio-icon">⚡</span>
+          <span class="radio-label">Intermediate</span>
+        </label>
+        <label class="radio-card" onclick="selectRadio(this, 'experience', 'Experienced (3-5 years)')">
+          <input type="radio" name="experience" value="Experienced (3-5 years)"/>
+          <span class="radio-icon">🔥</span>
+          <span class="radio-label">Experienced</span>
+        </label>
+        <label class="radio-card" onclick="selectRadio(this, 'experience', 'Expert (5+ years)')">
+          <input type="radio" name="experience" value="Expert (5+ years)"/>
+          <span class="radio-icon">👑</span>
+          <span class="radio-label">Expert</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <div></div>
+      <button class="btn-next" onclick="nextStep(1)">Next Step →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Skills -->
+  <div class="step" id="step-2">
+    <div class="step-badge">✦ Step 2</div>
+    <h2>What are your<br/>current skills?</h2>
+    <p class="step-sub">Select all that apply — be honest!</p>
+
+    <div class="field">
+      <label>Technical Skills</label>
+      <div class="tags-container" id="tech-skills">
+        <div class="tag" onclick="toggleTag(this, 'skills')">Python</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">JavaScript</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">Java</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">C++</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">SQL</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">Machine Learning</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">Deep Learning</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">Data Analysis</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">HTML/CSS</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">React</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">Node.js</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">Cloud (AWS/Azure)</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">Docker</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">Figma</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">Excel</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">Linux</div>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:20px;">
+      <label>Soft Skills</label>
+      <div class="tags-container" id="soft-skills">
+        <div class="tag" onclick="toggleTag(this, 'skills')">Leadership</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">Communication</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">Problem Solving</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">Teamwork</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">Creativity</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">Time Management</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">Critical Thinking</div>
+        <div class="tag" onclick="toggleTag(this, 'skills')">Adaptability</div>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn-prev" onclick="prevStep(2)">← Back</button>
+      <button class="btn-next" onclick="nextStep(2)">Next Step →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Interests -->
+  <div class="step" id="step-3">
+    <div class="step-badge">✦ Step 3</div>
+    <h2>What excites<br/>you most?</h2>
+    <p class="step-sub">Pick your areas of genuine interest</p>
+
+    <div class="tags-container" id="interests-container">
+      <div class="tag" onclick="toggleTag(this, 'interests')">🤖 Artificial Intelligence</div>
+      <div class="tag" onclick="toggleTag(this, 'interests')">📊 Data & Analytics</div>
+      <div class="tag" onclick="toggleTag(this, 'interests')">🌐 Web Development</div>
+      <div class="tag" onclick="toggleTag(this, 'interests')">📱 Mobile Apps</div>
+      <div class="tag" onclick="toggleTag(this, 'interests')">🎨 Design & Creativity</div>
+      <div class="tag" onclick="toggleTag(this, 'interests')">🛡️ Cybersecurity</div>
+      <div class="tag" onclick="toggleTag(this, 'interests')">☁️ Cloud & DevOps</div>
+      <div class="tag" onclick="toggleTag(this, 'interests')">💼 Business & Strategy</div>
+      <div class="tag" onclick="toggleTag(this, 'interests')">📈 Finance & Fintech</div>
+      <div class="tag" onclick="toggleTag(this, 'interests')">🎮 Gaming</div>
+      <div class="tag" onclick="toggleTag(this, 'interests')">🏥 Healthcare Tech</div>
+      <div class="tag" onclick="toggleTag(this, 'interests')">📚 Education</div>
+      <div class="tag" onclick="toggleTag(this, 'interests')">⛓️ Blockchain</div>
+      <div class="tag" onclick="toggleTag(this, 'interests')">🌍 Social Impact</div>
+      <div class="tag" onclick="toggleTag(this, 'interests')">📣 Marketing</div>
+      <div class="tag" onclick="toggleTag(this, 'interests')">🔬 Research</div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn-prev" onclick="prevStep(3)">← Back</button>
+      <button class="btn-next" onclick="nextStep(3)">Next Step →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Work Style -->
+  <div class="step" id="step-4">
+    <div class="step-badge">✦ Step 4</div>
+    <h2>How do you<br/>like to work?</h2>
+    <p class="step-sub">Your personality shapes your ideal career</p>
+
+    <div class="field">
+      <label>Work Style Preference</label>
+      <div class="radio-grid">
+        <label class="radio-card" onclick="selectRadio(this, 'work_style', 'Remote / Independent')">
+          <input type="radio" name="work_style"/>
+          <span class="radio-icon">🏠</span>
+          <span class="radio-label">Remote / Solo</span>
+        </label>
+        <label class="radio-card" onclick="selectRadio(this, 'work_style', 'Team Collaboration')">
+          <input type="radio" name="work_style"/>
+          <span class="radio-icon">👥</span>
+          <span class="radio-label">Team Work</span>
+        </label>
+        <label class="radio-card" onclick="selectRadio(this, 'work_style', 'Creative & Open-ended')">
+          <input type="radio" name="work_style"/>
+          <span class="radio-icon">💡</span>
+          <span class="radio-label">Creative</span>
+        </label>
+        <label class="radio-card" onclick="selectRadio(this, 'work_style', 'Structured & Analytical')">
+          <input type="radio" name="work_style"/>
+          <span class="radio-icon">📐</span>
+          <span class="radio-label">Structured</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:24px;">
+      <label>Personality Traits (select all that describe you)</label>
+      <div class="tags-container">
+        <div class="tag" onclick="toggleTag(this, 'personality')">Analytical</div>
+        <div class="tag" onclick="toggleTag(this, 'personality')">Creative</div>
+        <div class="tag" onclick="toggleTag(this, 'personality')">Detail-Oriented</div>
+        <div class="tag" onclick="toggleTag(this, 'personality')">Big Picture Thinker</div>
+        <div class="tag" onclick="toggleTag(this, 'personality')">People Person</div>
+        <div class="tag" onclick="toggleTag(this, 'personality')">Introverted</div>
+        <div class="tag" onclick="toggleTag(this, 'personality')">Leadership-Oriented</div>
+        <div class="tag" onclick="toggleTag(this, 'personality')">Risk-Taker</div>
+        <div class="tag" onclick="toggleTag(this, 'personality')">Empathetic</div>
+        <div class="tag" onclick="toggleTag(this, 'personality')">Ambitious</div>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn-prev" onclick="prevStep(4)">← Back</button>
+      <button class="btn-next" onclick="nextStep(4)">Next Step →</button>
+    </div>
+  </div>
+
+  <!-- STEP 5: Goal -->
+  <div class="step" id="step-5">
+    <div class="step-badge">✦ Step 5</div>
+    <h2>What's your<br/>ultimate goal?</h2>
+    <p class="step-sub">Final step — tell us what you're aiming for</p>
+
+    <div class="field">
+      <label>Career Goal / Dream</label>
+      <textarea id="goal" placeholder="e.g. I want to become a Machine Learning Engineer at a top tech company and work on AI products that impact millions of people..."></textarea>
+    </div>
+
+    <div class="field">
+      <label>Timeline to Achieve This</label>
+      <div class="radio-grid" style="grid-template-columns: repeat(3,1fr);">
+        <label class="radio-card" onclick="selectRadio(this, 'timeline', '3-6 months')">
+          <input type="radio" name="timeline"/>
+          <span class="radio-icon">⚡</span>
+          <span class="radio-label">3-6 Months</span>
+        </label>
+        <label class="radio-card" onclick="selectRadio(this, 'timeline', '6-12 months')">
+          <input type="radio" name="timeline"/>
+          <span class="radio-icon">🎯</span>
+          <span class="radio-label">6-12 Months</span>
+        </label>
+        <label class="radio-card" onclick="selectRadio(this, 'timeline', '1-2 years')">
+          <input type="radio" name="timeline"/>
+          <span class="radio-icon">🗺️</span>
+          <span class="radio-label">1-2 Years</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn-prev" onclick="prevStep(5)">← Back</button>
+      <button class="btn-next" onclick="submitQuiz()" style="background: linear-gradient(135deg, #10b981, #059669);">
+        ✦ Analyze My Profile
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Screen -->
+<div class="loading-screen" id="loading">
+  <div class="loader-ring"></div>
+  <div>
+    <div class="loading-text">Analyzing Your Profile</div>
+    <div class="loading-sub" id="loading-msg">AI is reviewing your skills...</div>
+  </div>
+  <div class="loading-dots">
+    <span></span><span></span><span></span>
+  </div>
+</div>
+
+<script>
+  const formData = {
+    skills: [], interests: [], personality: [],
+    experience: '', work_style: '', timeline: ''
+  };
+
+  const totalSteps = 5;
+  let currentStep = 1;
+
+  function updateProgress(step) {
+    document.getElementById('progress-count').textContent = `Step ${step} of ${totalSteps}`;
+    document.getElementById('progress-fill').style.width = `${(step / totalSteps) * 100}%`;
+  }
+
+  function nextStep(from) {
+    if (from === 1) {
+      const name = document.getElementById('name').value.trim();
+      const edu = document.getElementById('education').value;
+      if (!name) { alert('Please enter your name'); return; }
+      if (!edu) { alert('Please select your education'); return; }
+      if (!formData.experience) { alert('Please select your experience level'); return; }
+      formData.name = name;
+      formData.education = edu;
+    }
+    if (from === 2 && formData.skills.length === 0) {
+      alert('Please select at least one skill'); return;
+    }
+    if (from === 3 && formData.interests.length === 0) {
+      alert('Please select at least one interest'); return;
+    }
+
+    document.getElementById(`step-${from}`).classList.remove('active');
+    currentStep = from + 1;
+    document.getElementById(`step-${currentStep}`).classList.add('active');
+    updateProgress(currentStep);
+    window.scrollTo(0, 0);
+  }
+
+  function prevStep(from) {
+    document.getElementById(`step-${from}`).classList.remove('active');
+    currentStep = from - 1;
+    document.getElementById(`step-${currentStep}`).classList.add('active');
+    updateProgress(currentStep);
+    window.scrollTo(0, 0);
+  }
+
+  function toggleTag(el, key) {
+    const val = el.textContent.trim();
+    el.classList.toggle('selected');
+    if (el.classList.contains('selected')) {
+      formData[key].push(val);
+    } else {
+      formData[key] = formData[key].filter(v => v !== val);
+    }
+  }
+
+  function selectRadio(el, key, value) {
+    document.querySelectorAll(`[onclick*="'${key}'"]`).forEach(e => e.classList.remove('selected'));
+    el.classList.add('selected');
+    formData[key] = value;
+  }
+
+  const loadingMsgs = [
+    'Matching your skills to career paths...',
+    'Detecting skill gaps...',
+    'Building your personalized roadmap...',
+    'Almost there...'
+  ];
+
+  async function submitQuiz() {
+    const goal = document.getElementById('goal').value.trim();
+    if (!goal) { alert('Please describe your career goal'); return; }
+    formData.goal = goal;
+
+    const loading = document.getElementById('loading');
+    loading.classList.add('visible');
+
+    let msgIdx = 0;
+    const msgEl = document.getElementById('loading-msg');
+    const msgInterval = setInterval(() => {
+      msgIdx = (msgIdx + 1) % loadingMsgs.length;
+      msgEl.textContent = loadingMsgs[msgIdx];
+    }, 2000);
+
+    try {
+      const res = await fetch('/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const result = await res.json();
+      clearInterval(msgInterval);
+
+      if (result.success) {
+        sessionStorage.setItem('careerResult', JSON.stringify(result.data));
+        sessionStorage.setItem('userName', formData.name || 'User');
+        window.location.href = '/results';
+      } else {
+        loading.classList.remove('visible');
+        alert('Analysis failed: ' + result.error);
+      }
+    } catch (err) {
+      clearInterval(msgInterval);
+      loading.classList.remove('visible');
+      alert('Something went wrong. Please try again.');
+    }
+  }
+</script>
+</body>
+</html>

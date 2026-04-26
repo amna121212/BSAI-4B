@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CareerAI — Your Results</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #050a14;
+      --surface: #0c1525;
+      --card: #111d30;
+      --card2: #0e1929;
+      --border: rgba(99,179,237,0.12);
+      --accent: #3b82f6;
+      --accent2: #06b6d4;
+      --gold: #f59e0b;
+      --success: #10b981;
+      --purple: #8b5cf6;
+      --text: #e2e8f0;
+      --muted: #64748b;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
+
+    .bg-grid {
+      position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: 0;
+    }
+
+    .orb {
+      position: fixed; border-radius: 50%; filter: blur(100px); z-index: 0;
+    }
+    .orb1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%); top: -200px; left: -200px; }
+    .orb2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 70%); bottom: 0; right: 0; }
+
+    nav {
+      position: relative; z-index: 10;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 60px;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      background: rgba(5,10,20,0.7);
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem;
+      color: var(--text); text-decoration: none;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .logo-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--accent); box-shadow: 0 0 15px var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 10px var(--accent); }
+      50% { box-shadow: 0 0 25px var(--accent); }
+    }
+
+    .page {
+      position: relative; z-index: 5;
+      max-width: 1000px; margin: 0 auto;
+      padding: 56px 32px;
+    }
+
+    /* HERO BANNER */
+    .result-hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px;
+      margin-bottom: 36px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .result-hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse at 80% 50%, rgba(59,130,246,0.12) 0%, transparent 60%);
+    }
+
+    .result-hero-inner { position: relative; }
+
+    .greeting {
+      font-size: 0.85rem; color: var(--accent2);
+      letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .result-hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800; line-height: 1.1; margin-bottom: 16px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .motivational {
+      color: var(--muted); font-size: 1rem; line-height: 1.6;
+      max-width: 600px; margin-top: 8px;
+    }
+
+    /* SECTION */
+    .section {
+      margin-bottom: 36px;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .section-label {
+      font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); font-weight: 500; margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    /* CAREER CARDS */
+    .careers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .career-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .career-card.top-match {
+      border-color: rgba(59,130,246,0.4);
+      box-shadow: 0 0 40px rgba(59,130,246,0.15);
+    }
+
+    .career-card.top-match::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+
+    .career-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4), 0 0 30px rgba(59,130,246,0.1);
+    }
+
+    .top-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 4px 12px; border-radius: 100px;
+      margin-bottom: 16px;
+    }
+
+    .career-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .career-name {
+      font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700;
+    }
+
+    .match-badge {
+      font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800;
+      color: var(--accent);
+    }
+
+    .match-label { font-size: 0.7rem; color: var(--muted); text-align: right; }
+
+    .match-bar {
+      height: 5px; background: var(--surface);
+      border-radius: 100px; margin-bottom: 16px; overflow: hidden;
+    }
+
+    .match-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 100px;
+      box-shadow: 0 0 10px var(--accent);
+      transition: width 1s ease;
+    }
+
+    .why-suited {
+      font-size: 0.87rem; color: var(--muted); line-height: 1.6; margin-bottom: 16px;
+    }
+
+    .tags-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+
+    .skill-tag {
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.2);
+      color: var(--success);
+      border-radius: 100px; padding: 3px 12px;
+      font-size: 0.75rem; font-weight: 500;
+    }
+
+    .gap-tag {
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.2);
+      color: var(--gold);
+      border-radius: 100px; padding: 3px 12px;
+      font-size: 0.75rem; font-weight: 500;
+    }
+
+    .tag-label {
+      font-size: 0.75rem; color: var(--muted); margin-bottom: 6px; font-weight: 500;
+    }
+
+    /* SKILL GAP SUMMARY */
+    .gap-section {
+      background: var(--card);
+      border: 1px solid rgba(245,158,11,0.2);
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 36px;
+    }
+
+    .gap-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .gap-icon {
+      width: 44px; height: 44px;
+      background: rgba(245,158,11,0.15);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    .gap-title { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; }
+    .gap-sub { color: var(--muted); font-size: 0.85rem; }
+
+    .gap-pills { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    .gap-pill {
+      background: rgba(245,158,11,0.08);
+      border: 1px solid rgba(245,158,11,0.25);
+      color: #fbbf24;
+      border-radius: 100px; padding: 8px 18px;
+      font-size: 0.85rem; font-weight: 500;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    /* ROADMAP */
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .phase-card {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .phase-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(59,130,246,0.25);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+    }
+
+    .phase-num {
+      font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800;
+      position: absolute; top: 10px; right: 16px;
+      opacity: 0.06; color: var(--accent); line-height: 1;
+    }
+
+    .phase-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; margin-bottom: 14px;
+    }
+
+    .p1 .phase-icon { background: rgba(59,130,246,0.15); }
+    .p2 .phase-icon { background: rgba(6,182,212,0.15); }
+    .p3 .phase-icon { background: rgba(16,185,129,0.15); }
+    .p4 .phase-icon { background: rgba(245,158,11,0.15); }
+
+    .phase-title {
+      font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .phase-duration {
+      font-size: 0.78rem; color: var(--muted); margin-bottom: 16px;
+      display: flex; align-items: center; gap: 4px;
+    }
+
+    .phase-tasks { list-style: none; margin-bottom: 16px; }
+
+    .phase-tasks li {
+      font-size: 0.82rem; color: var(--muted);
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+
+    .phase-tasks li::before {
+      content: '▸';
+      color: var(--accent); flex-shrink: 0; font-size: 0.7rem; margin-top: 2px;
+    }
+
+    .phase-resources { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .resource-chip {
+      background: rgba(59,130,246,0.08);
+      border: 1px solid rgba(59,130,246,0.15);
+      color: var(--accent2);
+      border-radius: 100px; padding: 3px 10px;
+      font-size: 0.72rem;
+    }
+
+    /* RETRY */
+    .retry-row {
+      display: flex; justify-content: center;
+      margin-top: 48px;
+    }
+
+    .btn-retry {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-retry:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section:nth-child(2) { animation-delay: 0.1s; }
+    .section:nth-child(3) { animation-delay: 0.2s; }
+    .section:nth-child(4) { animation-delay: 0.3s; }
+
+    @media (max-width: 600px) {
+      nav { padding: 16px 20px; }
+      .page { padding: 32px 16px; }
+      .result-hero { padding: 28px; }
+      .careers-grid { grid-template-columns: 1fr; }
+      .roadmap { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<nav>
+  <a class="logo" href="/">
+    <div class="logo-dot"></div>
+    CareerAI
+  </a>
+  <a href="/quiz" class="btn" style="background:var(--accent);color:white;padding:10px 22px;border-radius:8px;text-decoration:none;font-size:0.88rem;">Retake Quiz</a>
+</nav>
+
+<div class="page" id="page-content">
+  <div style="text-align:center;padding:100px;color:var(--muted);">Loading your results...</div>
+</div>
+
+<script>
+  const data = JSON.parse(sessionStorage.getItem('careerResult') || '{}');
+  const userName = sessionStorage.getItem('userName') || 'You';
+
+  const phaseIcons = ['🌱', '⚡', '🔨', '🚀'];
+  const phaseColors = ['p1', 'p2', 'p3', 'p4'];
+
+  function renderResults(d) {
+    const allGaps = [...new Set(d.careers.flatMap(c => c.skill_gaps))];
+
+    const careersHTML = d.careers.map((c, i) => `
+      <div class="career-card ${i === 0 ? 'top-match' : ''}">
+        ${i === 0 ? '<div class="top-badge">⭐ Best Match</div>' : ''}
+        <div class="career-top">
+          <div class="career-name">${c.title}</div>
+          <div>
+            <div class="match-badge">${c.match_percentage}%</div>
+            <div class="match-label">match</div>
+          </div>
+        </div>
+        <div class="match-bar">
+          <div class="match-fill" style="width:${c.match_percentage}%"></div>
+        </div>
+        <p class="why-suited">${c.why_suited}</p>
+
+        <div class="tag-label">✅ Your Strengths</div>
+        <div class="tags-row">
+          ${c.current_strengths.map(s => `<span class="skill-tag">${s}</span>`).join('')}
+        </div>
+
+        <div class="tag-label" style="margin-top:12px;">⚠️ Skill Gaps</div>
+        <div class="tags-row">
+          ${c.skill_gaps.map(s => `<span class="gap-tag">${s}</span>`).join('')}
+        </div>
+      </div>
+    `).join('');
+
+    const roadmapKeys = Object.keys(d.roadmap);
+    const roadmapHTML = roadmapKeys.map((key, i) => {
+      const p = d.roadmap[key];
+      return `
+        <div class="phase-card ${phaseColors[i]}">
+          <div class="phase-num">0${i+1}</div>
+          <div class="phase-icon">${phaseIcons[i]}</div>
+          <div class="phase-title">${p.title}</div>
+          <div class="phase-duration">⏱ ${p.duration}</div>
+          <ul class="phase-tasks">
+            ${p.tasks.map(t => `<li>${t}</li>`).join('')}
+          </ul>
+          <div class="phase-resources">
+            ${p.resources.map(r => `<span class="resource-chip">${r}</span>`).join('')}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    document.getElementById('page-content').innerHTML = `
+      <div class="result-hero">
+        <div class="result-hero-inner">
+          <div class="greeting">✦ Analysis Complete</div>
+          <h1>Great news, <span class="gradient-text">${userName}!</span><br/>Your results are ready.</h1>
+          <p class="motivational">${d.motivational_message}</p>
+        </div>
+      </div>
+
+      <div class="section" style="animation-delay:0.1s">
+        <div class="section-label">Top Matches</div>
+        <div class="section-title">Your Recommended<br/>Career Paths</div>
+        <div class="careers-grid">${careersHTML}</div>
+      </div>
+
+      <div class="gap-section">
+        <div class="gap-header">
+          <div class="gap-icon">🔍</div>
+          <div>
+            <div class="gap-title">Skills to Develop</div>
+            <div class="gap-sub">Focus on these to accelerate your career switch</div>
+          </div>
+        </div>
+        <div class="gap-pills">
+          ${allGaps.map(g => `<div class="gap-pill">⚡ ${g}</div>`).join('')}
+        </div>
+      </div>
+
+      <div class="section" style="animation-delay:0.2s">
+        <div class="section-label">Your Roadmap</div>
+        <div class="section-title">4-Phase Learning<br/>Journey</div>
+        <div class="roadmap">${roadmapHTML}</div>
+      </div>
+
+      <div class="retry-row">
+        <a href="/quiz" class="btn-retry">↺ Retake Quiz with Different Profile</a>
+      </div>
+    `;
+  }
+
+  if (data && data.careers) {
+    renderResults(data);
+  } else {
+    document.getElementById('page-content').innerHTML = `
+      <div style="text-align:center;padding:100px 20px;color:var(--muted);">
+        <h2 style="font-family:'Syne',sans-serif;margin-bottom:16px;">No results found</h2>
+        <p>Please <a href="/quiz" style="color:var(--accent)">take the quiz first</a></p>
+      </div>
+    `;
+  }
+</script>
+</body>
+</html>
